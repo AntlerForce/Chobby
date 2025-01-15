@@ -68,10 +68,12 @@ local function SaveWindowPos(width, height, x, y)
 	local Configuration = WG.Chobby.Configuration
 
 	if not width then
-		width, height, x, y = Spring.GetViewGeometry()
+		width, height, x, y = Spring.GetWindowGeometry()
 	end
 	local screenX, screenY = Spring.GetScreenGeometry()
 	y = screenY - height - y
+
+	Spring.Echo("save_window_pos", x, y, width, height)
 
 	if x then
 		Configuration:SetConfigValue("window_WindowPosX", x)
@@ -132,7 +134,7 @@ local function SetLobbyFullscreenMode_Sane(mode, borderOverride)
 		Spring.SetConfigInt("WindowPosX", 0, false)
 		Spring.SetConfigInt("WindowPosY", 0, false)
 	elseif mode == 2 then -- Windowed
-		local winSizeX, winSizeY, winPosX, winPosY = Spring.GetViewGeometry()
+		local winSizeX, winSizeY, winPosX, winPosY = Spring.GetWindowGeometry()
 		winPosX = Configuration.window_WindowPosX or winPosX
 		winSizeX = Configuration.window_XResolutionWindowed or winSizeX
 		winSizeY = Configuration.window_YResolutionWindowed or winSizeY
@@ -206,7 +208,6 @@ local function SetLobbyFullscreenMode(mode, borderOverride)
 	end
 
 	local Configuration = WG.Chobby.Configuration
-	local needAgressiveSetting = (mode ~= 2) and (currentMode ~= 2)
 
 	if (currentMode == 2 or not currentMode) and lobbyFullscreen == 2 then
 		SaveWindowPos()
@@ -240,7 +241,7 @@ local function SetLobbyFullscreenMode(mode, borderOverride)
 		Spring.SetConfigInt("WindowBorderless", 1, false)
 		Spring.SetConfigInt("Fullscreen", 0, false)
 	elseif mode == 2 then -- Windowed
-		local winSizeX, winSizeY, winPosX, winPosY = Spring.GetViewGeometry()
+		local winSizeX, winSizeY, winPosX, winPosY = Spring.GetWindowGeometry()
 		winPosX = Configuration.window_WindowPosX or winPosX
 		winSizeX = Configuration.window_XResolutionWindowed or winSizeX
 		winSizeY = Configuration.window_YResolutionWindowed or winSizeY
@@ -309,13 +310,6 @@ local function SetLobbyFullscreenMode(mode, borderOverride)
 	if delayedModeSet == mode and delayedBorderOverride then
 		delayedModeSet = nil
 		delayedBorderOverride = nil
-	elseif needAgressiveSetting then
-		delayedModeSet = mode
-		delayedBorderOverride = borderOverride
-		currentMode = 2
-		Spring.SetConfigInt("WindowBorderless", 0, false)
-		Spring.SetConfigInt("Fullscreen", 0)
-		WG.Delay(SetLobbyFullscreenMode, 0.8)
 	end
 end
 
@@ -1954,7 +1948,7 @@ end
 --		return
 --	end
 --
---	local width, height, x, y = Spring.GetViewGeometry()
+--	local width, height, x, y = Spring.GetWindowGeometry()
 --	if width == oldWidth and height == oldHeight and x == oldX and y == oldY then
 --		return
 --	end

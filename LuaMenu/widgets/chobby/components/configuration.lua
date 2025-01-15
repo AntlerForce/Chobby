@@ -36,7 +36,7 @@ function Configuration:init()
 	self.statusMaxNameLength = 185
 	self.friendMaxNameLength = 290
 	self.notificationMaxNameLength = 230
-	self.steamOverlayEnablable = (Platform.osFamily ~= "Linux" and Platform.osFamily ~= "FreeBSD")
+	self.steamOverlayEnablable = true
 	self.useChatTabBadges = false
 
 	self.userName = false
@@ -258,8 +258,8 @@ function Configuration:init()
 		["it"] = {locale = "it", name="Italiano"},
 	}
 
-	self.lobby_fullscreen = 3
-	self.game_fullscreen = 3
+	self.lobby_fullscreen = 1
+	self.game_fullscreen = 1
 
 	self.chatFontSize = 18
 
@@ -294,6 +294,7 @@ function Configuration:init()
 	self.AtiIntelSettingsOverride = {
 		AdvSky = 0,
 		UsePBO = 0,
+		VSync = 1,
 	}
 
 	self.countryShortnames = VFS.Include(LUA_DIRNAME .. "configs/countryShortname.lua")
@@ -838,7 +839,7 @@ function Configuration:ImageFileExists(filePath)
 end
 
 function Configuration:GetMinimapSmallImage(mapName)
-	mapName = string.gsub(mapName, " ", "_")
+	mapName = string.gsub(mapName, "[^a-zA-Z0-9%-%(%)%.]", "_")
 
 	local filePath = self.gameConfig.minimapThumbnailPath .. mapName .. ".png"
 	if self:ImageFileExists(filePath) then
@@ -863,7 +864,7 @@ function Configuration:GetMinimapImage(mapName)
 	if not self.gameConfig.minimapOverridePath then
 		return LUA_DIRNAME .. "images/minimapNotFound1.png"
 	end
-	mapName = string.gsub(mapName, " ", "_")
+	mapName = string.gsub(mapName, "[^a-zA-Z0-9%-%(%)%.]", "_")
 	local filePath = self.gameConfig.minimapOverridePath .. mapName .. ".jpg"
 	if not self:ImageFileExists(filePath) then
 		filePath = "LuaMenu/Images/Minimaps/" .. mapName .. ".jpg"
@@ -877,6 +878,32 @@ function Configuration:GetMinimapImage(mapName)
 		return filePath, true
 	end
 	return filePath
+end
+
+function Configuration:GetModoptions(gameName)
+	if not (gameName and VFS.HasArchive(gameName)) then
+		Spring.Log(LOG_SECTION, LOG.ERROR, "Missing game archive, cannot fetch modoptions")
+		return false
+	end
+
+	local function ReadModoptions()
+		if not VFS.FileExists("modoptions.lua", VFS.ZIP) then
+			return false
+		end
+		return VFS.Include("modoptions.lua", nil, VFS.ZIP)
+	end
+
+	local alreadyLoaded = false
+	for _, archive in pairs(VFS.GetLoadedArchives()) do
+		if archive == gameName then
+			alreadyLoaded = true
+			break
+		end
+	end
+	if alreadyLoaded then
+		return VFS.Include("modoptions.lua", nil, VFS.ZIP)
+	end
+	return VFS.UseArchive(gameName, ReadModoptions)
 end
 
 function Configuration:GetLoadingImage(size)

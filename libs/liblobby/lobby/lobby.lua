@@ -313,7 +313,7 @@ function Lobby:ConnectToBattle(useSpringRestart, battleIp, battlePort, clientPor
 		end
 	end
 	
-	WG.Delay(DelayedStart, 0.5)
+	WG.Delay(DelayedStart, 0.4)
 end
 
 function Lobby:VoteYes()

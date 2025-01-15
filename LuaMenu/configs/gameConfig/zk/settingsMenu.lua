@@ -260,41 +260,6 @@ local settingsConfig = {
 				size = 2,
 			},
 			{
-				name = "AtiIntelCompatibility_2",
-				humanName = "ATI/Intel Compatibility",
-				options = {
-					{
-						name = "On",
-						applyFunction = function(_, conf)
-							conf:UpdateFixedSettings(conf.AtiIntelSettingsOverride)
-							Spring.Echo("Set ATI/intel/other non-nvidia compatibility state: Enabled")
-							return
-						end
-					},
-					{
-						name = "Automatic",
-						applyFunction = function(_, conf)
-							if conf:GetIsNotRunningNvidia() then
-								conf:UpdateFixedSettings(conf.AtiIntelSettingsOverride)
-								Spring.Echo("Set ATI/intel/other non-nvidia compatibility state: Enabled (Automatic)")
-								return
-							end
-							conf:UpdateFixedSettings()
-							Spring.Echo("Set ATI/intel/other non-nvidia compatibility state: Disabled (Automatic)")
-							return
-						end
-					},
-					{
-						name = "Off",
-						applyFunction = function(_, conf)
-							conf:UpdateFixedSettings()
-							Spring.Echo("Set ATI/intel/other non-nvidia compatibility state: Disabled")
-							return
-						end
-					},
-				},
-			},
-			{
 				name = "AntiAliasing",
 				humanName = "Anti Aliasing",
 				options = {
@@ -459,6 +424,30 @@ local settingsConfig = {
 						apply = {
 							DynamicSky = 0,
 							AdvSky = 0,
+						}
+					},
+				},
+			},
+			{
+				name = "VSync",
+				humanName = "Frame Rate Limit (vsync)",
+				options = {
+					{
+						name = "Standard",
+						apply = {
+							VSync = 1,
+						}
+					},
+					{
+						name = "Adaptive",
+						apply = {
+							VSync = -1,
+						}
+					},
+					{
+						name = "Off",
+						apply = {
+							VSync = 0,
 						}
 					},
 				},
@@ -832,30 +821,6 @@ local settingsConfig = {
 						apply = {
 							TreeRadius = 2500,
 							GrassDetail = 0,
-						}
-					},
-				},
-			},
-			{
-				name = "VSync",
-				humanName = "Vertical Sync",
-				options = {
-					{
-						name = "Standard",
-						apply = {
-							VSync = 1,
-						}
-					},
-					{
-						name = "Adaptive",
-						apply = {
-							VSync = -1,
-						}
-					},
-					{
-						name = "Off",
-						apply = {
-							VSync = 0,
 						}
 					},
 				},
@@ -1317,6 +1282,41 @@ local settingsConfig = {
 						apply = {
 							LuaGarbageCollectionRunTimeMult = 5,
 						}
+					},
+				},
+			},
+			{
+				name = "AtiIntelCompatibility_2",
+				humanName = "ATI/Intel Compatibility",
+				options = {
+					{
+						name = "On",
+						applyFunction = function(_, conf)
+							conf:UpdateFixedSettings(conf.AtiIntelSettingsOverride)
+							Spring.Echo("Set ATI/intel/other non-nvidia compatibility state: Enabled")
+							return
+						end
+					},
+					{
+						name = "Automatic",
+						applyFunction = function(_, conf)
+							if conf:GetIsNotRunningNvidia() then
+								conf:UpdateFixedSettings(conf.AtiIntelSettingsOverride)
+								Spring.Echo("Set ATI/intel/other non-nvidia compatibility state: Enabled (Automatic)")
+								return
+							end
+							conf:UpdateFixedSettings()
+							Spring.Echo("Set ATI/intel/other non-nvidia compatibility state: Disabled (Automatic)")
+							return
+						end
+					},
+					{
+						name = "Off",
+						applyFunction = function(_, conf)
+							conf:UpdateFixedSettings()
+							Spring.Echo("Set ATI/intel/other non-nvidia compatibility state: Disabled")
+							return
+						end
 					},
 				},
 			},
